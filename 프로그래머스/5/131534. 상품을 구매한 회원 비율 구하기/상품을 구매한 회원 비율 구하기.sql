@@ -1,0 +1,30 @@
+/*
+1. SELECT: YEAR, MONTH, PURCHASED_USERS, PURCHASED_RATIO(두번째 자리에서 반올림)
+2. ORDER: YEAR, MONTH
+*/
+
+SELECT
+    YEAR(sales_date) AS YEAR,
+    MONTH(sales_date) AS MONTH,
+    COUNT(DISTINCT USER_ID) AS PURCHASED_USERS,
+    ROUND(COUNT(DISTINCT USER_ID) / (
+        SELECT
+            COUNT(DISTINCT USER_ID)
+        FROM
+            USER_INFO
+        WHERE YEAR(JOINED) = 2021
+    ), 1) AS PURCHASED_RATIO
+FROM
+    ONLINE_SALE
+WHERE
+    USER_ID IN (
+    SELECT
+        DISTINCT USER_ID
+    FROM
+        USER_INFO
+    WHERE YEAR(JOINED) = 2021
+)
+GROUP BY
+    YEAR(sales_date), MONTH(sales_date)
+ORDER BY
+    1, 2;
